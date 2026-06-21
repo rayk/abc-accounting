@@ -1,0 +1,7 @@
+apiVersion: cogrun/v1
+kind: TargetConfig
+target:
+  kind: dart-package
+  name: abc-accounting
+gates:
+  profile: standard

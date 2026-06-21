@@ -1,0 +1,23 @@
+name: contracts_for_abc_accounting
+description: >-
+  Dev-only conformance kit for abc_accounting: the reusable conformance suite, a
+  reference implementation, and the system-under-test switch. Depends on the
+  released abc_accounting package; never released itself.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  # The contract lives in the implementation package now, so the kit depends on
+  # abc directly (a dev-time path dependency; this package is never published).
+  abc_accounting:
+    path: ..
+  fpdart: ^1.2.0
+  test: ^1.25.0
+  bnd_eac:
+    git:
+      url: https://github.com/rayk/bounded.git
+      ref: 'bnd-eac/v0.2.0'
+      path: packages/bnd-eac

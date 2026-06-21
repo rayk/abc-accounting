@@ -1,0 +1,24 @@
+# Strict analysis befitting a reference exemplar: the config is part of what is
+# being demonstrated. The pure, total style means these can stay strict.
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  errors:
+    # Exhaustiveness is a feature here — never silently fall through.
+    non_exhaustive_switch_statement: error
+
+linter:
+  rules:
+    - prefer_final_locals
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_const_constructors_in_immutables
+    # `directives_ordering` is intentionally omitted: the barrel exports are
+    # ordered innermost-layer-first as a reading guide, not alphabetically.
+    - unnecessary_this
+    - prefer_is_empty
+    - prefer_is_not_empty
+    - avoid_redundant_argument_values
+    - unnecessary_parenthesis
+    - prefer_expression_function_bodies

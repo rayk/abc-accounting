@@ -1,0 +1,27 @@
+name: abc_accounting
+description: >-
+  A reference exemplar of idiomatic, functional Dart on fpdart: the accounting
+  Ledger — the token-guarded interface and its implementation in one package. The
+  only released artifact; consumable directly from a git tag.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  fpdart: ^1.2.0
+  riverpod: ^2.6.0
+  fast_immutable_collections: ^11.0.0
+
+dev_dependencies:
+  test: ^1.25.0
+  glados: ^1.1.7
+  dart_arch_test: ^0.3.1
+  mutation_test: ^1.8.0
+  coverage: ^1.15.1
+  bnd_eac:
+    git:
+      url: https://github.com/rayk/bounded.git
+      ref: 'bnd-eac/v0.2.0'
+      path: packages/bnd-eac

@@ -1,0 +1,9 @@
+# The `pending` tag marks a conformance spec that is written but whose
+# implementation does not yet exist (the outside-in TDD "red"). It is skipped by
+# default so the contract package builds green; run it explicitly to see the red:
+#
+#   dart test --run-skipped -t pending
+#
+tags:
+  pending:
+    skip: "spec written; implementation pending — run with --run-skipped -t pending"
