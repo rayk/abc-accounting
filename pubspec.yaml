@@ -20,6 +20,7 @@ dev_dependencies:
   dart_arch_test: ^0.3.1
   mutation_test: ^1.8.0
   coverage: ^1.15.1
+  very_good_analysis: ^10.2.0
   bnd_eac:
     git:
       url: https://github.com/rayk/bounded.git

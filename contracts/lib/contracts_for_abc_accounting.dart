@@ -5,13 +5,21 @@
 /// [LedgerUnderTest] switch.
 ///
 /// Since the [Ledger] contract was collapsed into the released `abc_accounting`
-/// package, this kit depends on `abc_accounting` directly (and re-exports it for
-/// convenience). It is never published — `abc_accounting` is the only released
+/// package, this kit depends on `abc_accounting` directly. It re-exports only
+/// the **contract-only** view (the `Ledger` surface + vocabulary), never the
+/// implementation — so authoring against this barrel keeps the implementation
+/// out of scope. It is never published — `abc_accounting` is the only released
 /// artifact — so this `abc → contracts` is purely a development-time dependency.
 library;
 
-export 'package:abc_accounting/abc_accounting.dart';
+// Contract-only re-export (not the full barrel): the kit authors against the
+// contract, so the implementation stays out of scope. The implementation-phase
+// binding (test/abc_conformance_test.dart) imports the full barrel directly.
+export 'package:abc_accounting/abc_accounting_contract.dart';
 
 export 'src/conformance.dart';
+// The per-boundary `package:checks` matchers (Either branch unwrap + the
+// AccountState field accessors), reusable when authoring further Ledger tests.
+export 'src/ledger_checks.dart';
 export 'src/reference_ledger.dart';
 export 'src/switch.dart';

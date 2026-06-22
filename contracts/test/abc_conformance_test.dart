@@ -1,3 +1,8 @@
+// Unlike the contract-phase tests, this implementation-phase binding imports
+// the FULL abc_accounting barrel — it names the concrete AccountLedger and its
+// effect seams to build the real SUT. The conformance suite it runs still only
+// names the Ledger interface + the LedgerFactory seam.
+import 'package:abc_accounting/abc_accounting.dart';
 import 'package:contracts_for_abc_accounting/contracts_for_abc_accounting.dart';
 import 'package:test/test.dart';
 

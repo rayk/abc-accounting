@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:abc_accounting/abc_accounting.dart' show contractVersion;
+import 'package:abc_accounting/abc_accounting_contract.dart' show contractVersion;
 import 'package:test/test.dart';
 
 /// Release guard: the implementation (`abc_accounting`) must be released at the

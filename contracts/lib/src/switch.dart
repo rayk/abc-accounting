@@ -1,4 +1,4 @@
-import 'package:abc_accounting/abc_accounting.dart';
+import 'package:abc_accounting/abc_accounting_contract.dart';
 
 import 'conformance.dart';
 import 'reference_ledger.dart';

@@ -1,8 +1,16 @@
 name: contracts_for_abc_accounting
 description: >-
-  Dev-only conformance kit for abc_accounting: the reusable conformance suite, a
-  reference implementation, and the system-under-test switch. Depends on the
-  released abc_accounting package; never released itself.
+  The dev-only conformance kit ("K") for abc_accounting ("S") in the Bounded
+  Package Standard — and a worked demonstration of how the bounded structure,
+  bnd_eac, and bnd_lints fit together around a contract. It holds the executable
+  specification of the Ledger contract — the ledgerAcceptance suite, the red
+  UnimplementedLedger stub, the green ReferenceLedger, and the LedgerUnderTest
+  switch — reaching the SUT only through the LedgerFactory seam. bnd_eac turns
+  that suite into a self-testing, agent-steering artifact (a ContractBrief that
+  renders the implementer's prompt on failure, plus checks-based matchers);
+  bnd_lints enforces the lc-stack rules on both S and K via analysis_options.
+  K path-depends on the released S and is never published, so this tooling never
+  enters a consumer's graph.
 version: 0.1.0
 publish_to: none
 
@@ -14,6 +22,10 @@ dependencies:
   # abc directly (a dev-time path dependency; this package is never published).
   abc_accounting:
     path: ..
+  # bnd_eac's checks-based matchers (the Either unwrap atoms + checkAllOf) are
+  # consumed directly by the per-boundary `ledger_checks.dart`, so checks is a
+  # direct dependency, not merely transitive through bnd_eac.
+  checks: ^0.3.1
   fpdart: ^1.2.0
   test: ^1.25.0
   bnd_eac:
@@ -21,3 +33,6 @@ dependencies:
       url: https://github.com/rayk/bounded.git
       ref: 'bnd-eac/v0.2.0'
       path: packages/bnd-eac
+
+dev_dependencies:
+  very_good_analysis: ^10.2.0

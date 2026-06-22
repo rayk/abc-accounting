@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:abc_accounting/abc_accounting.dart';
+import 'package:abc_accounting/abc_accounting_contract.dart';
 
 /// A minimal, in-memory **reference implementation** of [Ledger].
 ///
