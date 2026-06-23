@@ -10,8 +10,8 @@ import 'package:test/test.dart';
 /// what a contract looks like the moment it is written, before any behavior
 /// exists.
 ///
-/// Tagged `pending` so the default `dart test` skips it (CI stays green). Run it
-/// explicitly to watch the red:
+/// Tagged `pending` so the default `dart test` skips it (CI stays green).
+/// Run it explicitly to watch the red:
 ///
 /// ```bash
 /// dart test --run-skipped -t pending

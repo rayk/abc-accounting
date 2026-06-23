@@ -21,7 +21,7 @@ void openContract(LedgerFactory factory) {
       ..setRule(
         'A fresh ledger opens at zero balance, version 0, status open.',
       )
-      ..filterTypes({AccountState}));
+      ..filterTypes({AccountState}),);
 
     test('opens at zero balance, version 0, status open', () {
       checkAllOf<AccountState>(sut.state, [
@@ -29,6 +29,6 @@ void openContract(LedgerFactory factory) {
         (Subject<AccountState> s) => s.version.equals(const Version(0)),
         (Subject<AccountState> s) => s.status.equals(AccountStatus.open),
       ]);
-    }, tags: 'open_initial_state');
-  }, tags: 'open_initial');
+    }, tags: 'open_initial_state',);
+  }, tags: 'open_initial',);
 }

@@ -38,21 +38,43 @@ void main() {
   // Anchor on harness.yaml so the test works regardless of whether dart test
   // is invoked from the workspace root or from inside the package directory.
   final workspaceRoot = _workspaceRoot(Directory.current).uri;
-  final contractPubspecUri = workspaceRoot.resolve('abc_accounting_contract/pubspec.yaml');
-  final interfacePubspecUri = workspaceRoot.resolve('abc_accounting/pubspec.yaml');
+  final contractPubspecUri = workspaceRoot.resolve(
+    'abc_accounting_contract/pubspec.yaml',
+  );
+  final interfacePubspecUri = workspaceRoot.resolve(
+    'abc_accounting/pubspec.yaml',
+  );
 
   final contractVersion_ = _versionOf(contractPubspecUri);
   final interfaceVersion = _versionOf(interfacePubspecUri);
 
   String majorMinor(String v) => v.split('.').take(2).join('.');
 
-  test('abc_accounting and abc_accounting_contract share the same MAJOR.MINOR', () {
-    expect(majorMinor(interfaceVersion), majorMinor(contractVersion_),
-        reason: 'abc_accounting ($interfaceVersion) and abc_accounting_contract ($contractVersion_) must share MAJOR.MINOR.');
-  });
+  test(
+    'abc_accounting and abc_accounting_contract share the same MAJOR.MINOR',
+    () {
+      expect(
+        majorMinor(interfaceVersion),
+        majorMinor(contractVersion_),
+        reason:
+            'abc_accounting ($interfaceVersion) and '
+            'abc_accounting_contract ($contractVersion_) '
+            'must share MAJOR.MINOR.',
+      );
+    },
+  );
 
-  test('the runtime contractVersion constant agrees with the abc_accounting package version', () {
-    expect(contractVersion, interfaceVersion,
-        reason: 'The runtime contractVersion ($contractVersion) must equal the abc_accounting pubspec version ($interfaceVersion).');
-  });
+  test(
+    'the runtime contractVersion constant agrees with the '
+    'abc_accounting package version',
+    () {
+      expect(
+        contractVersion,
+        interfaceVersion,
+        reason:
+            'The runtime contractVersion ($contractVersion) must equal '
+            'the abc_accounting pubspec version ($interfaceVersion).',
+      );
+    },
+  );
 }

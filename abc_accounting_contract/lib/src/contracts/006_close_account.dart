@@ -20,13 +20,13 @@ void closeAccountContract(LedgerFactory factory) {
       ..setRule(
         'closeAccount sets status to closed. Closed is a terminal state.',
       )
-      ..filterTypes({AccountState}));
+      ..filterTypes({AccountState}),);
 
     test('closeAccount sets status to closed', () async {
       await sut.closeAccount();
       check(sut.state).status.equals(AccountStatus.closed);
-    }, tags: 'close_account_terminal_status');
-  }, tags: 'close_account_terminal');
+    }, tags: 'close_account_terminal_status',);
+  }, tags: 'close_account_terminal',);
 
   group('closeAccount — AccountNotActive', () {
     setUpAll(() => ledgerBrief
@@ -34,20 +34,20 @@ void closeAccountContract(LedgerFactory factory) {
         'A closed account permanently rejects money movement with '
         'AccountNotActive.',
       )
-      ..filterTypes({AccountNotActive, AccountState}));
+      ..filterTypes({AccountNotActive, AccountState}),);
 
     test('closed account rejects deposit', () async {
       await sut.closeAccount();
       check(await sut.deposit(const Money(10)))
           .failure
           .isA<AccountNotActive>();
-    }, tags: 'close_account_not_active_deposit');
+    }, tags: 'close_account_not_active_deposit',);
 
     test('closed account rejects withdraw', () async {
       await sut.closeAccount();
       check(await sut.withdraw(const Money(10)))
           .failure
           .isA<AccountNotActive>();
-    }, tags: 'close_account_not_active_withdraw');
-  }, tags: 'close_account_not_active');
+    }, tags: 'close_account_not_active_withdraw',);
+  }, tags: 'close_account_not_active',);
 }

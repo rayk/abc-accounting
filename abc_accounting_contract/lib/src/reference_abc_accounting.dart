@@ -32,8 +32,8 @@ final class ReferenceLedger extends Ledger {
   @override
   Stream<AccountState> get changes => _changes.stream;
 
-  /// Apply one step: dedupe by key, run the pure decision, and on success commit
-  /// the new state (emitting only when it actually changed).
+  /// Apply one step: dedupe by key, run the pure decision, and on success
+  /// commit the new state (emitting only when it actually changed).
   LedgerResult _apply(
     Option<CommandId> key,
     Either<LedgerError, AccountState> Function(AccountState) step,
@@ -53,7 +53,7 @@ final class ReferenceLedger extends Ledger {
 
   @override
   LedgerResult deposit(Money amount,
-          {Option<CommandId> idempotencyKey = const None()}) =>
+          {Option<CommandId> idempotencyKey = const None(),}) =>
       _apply(idempotencyKey, (s) {
         if (!s.status.canTransact) {
           return Either.left(AccountNotActive(s.status));
@@ -68,7 +68,7 @@ final class ReferenceLedger extends Ledger {
 
   @override
   LedgerResult withdraw(Money amount,
-          {Option<CommandId> idempotencyKey = const None()}) =>
+          {Option<CommandId> idempotencyKey = const None(),}) =>
       _apply(idempotencyKey, (s) {
         if (!s.status.canTransact) {
           return Either.left(AccountNotActive(s.status));
@@ -96,7 +96,7 @@ final class ReferenceLedger extends Ledger {
           balance: s.balance - amount,
           withdrawnToday: projected,
           version: s.version.next,
-        ));
+        ),);
       });
 
   @override

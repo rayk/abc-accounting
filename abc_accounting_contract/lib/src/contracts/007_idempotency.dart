@@ -22,7 +22,7 @@ void idempotencyContract(LedgerFactory factory) {
         'A keyed deposit is applied exactly once across retries: '
         'the same key yields the same result without re-applying.',
       )
-      ..filterTypes({AccountState, Money}));
+      ..filterTypes({AccountState, Money}),);
 
     test('keyed deposit applied exactly once', () async {
       const key = Option.of(CommandId('retry-1'));
@@ -32,6 +32,6 @@ void idempotencyContract(LedgerFactory factory) {
           await sut.deposit(const Money(100), idempotencyKey: key);
       check(first).success.balance.equals(const Money(100));
       check(second).equals(first);
-    }, tags: 'idempotency_keyed_deposit_once');
-  }, tags: 'idempotency_keyed_deposit');
+    }, tags: 'idempotency_keyed_deposit_once',);
+  }, tags: 'idempotency_keyed_deposit',);
 }

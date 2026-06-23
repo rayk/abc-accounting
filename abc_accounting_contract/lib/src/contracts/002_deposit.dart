@@ -20,22 +20,22 @@ void depositContract(LedgerFactory factory) {
       ..setRule(
         'A positive deposit increases the balance by the deposited amount.',
       )
-      ..filterTypes({AccountState, Money}));
+      ..filterTypes({AccountState, Money}),);
 
     test('balance increases by the deposited amount', () async {
       check(await sut.deposit(const Money(500)))
           .success
           .balance
           .equals(const Money(500));
-    }, tags: 'deposit_happy_balance');
+    }, tags: 'deposit_happy_balance',);
 
     test('version advances after deposit', () async {
       check(await sut.deposit(const Money(100)))
           .success
           .version
           .equals(const Version(1));
-    }, tags: 'deposit_happy_version');
-  }, tags: 'deposit_happy');
+    }, tags: 'deposit_happy_version',);
+  }, tags: 'deposit_happy',);
 
   group('deposit — AmountMustBePositive', () {
     setUpAll(() => ledgerBrief
@@ -43,13 +43,13 @@ void depositContract(LedgerFactory factory) {
         'Zero or negative deposit amount is rejected with '
         'AmountMustBePositive. State is unchanged.',
       )
-      ..filterTypes({AmountMustBePositive, AccountState, Money}));
+      ..filterTypes({AmountMustBePositive, AccountState, Money}),);
 
     test('zero amount returns AmountMustBePositive', () async {
       final before = sut.state;
       check(await sut.deposit(Money.zero)).failure.isA<AmountMustBePositive>();
       check(sut.state).equals(before);
-    }, tags: 'deposit_amount_positive_zero');
+    }, tags: 'deposit_amount_positive_zero',);
 
     test('negative amount returns AmountMustBePositive', () async {
       final before = sut.state;
@@ -57,6 +57,6 @@ void depositContract(LedgerFactory factory) {
           .failure
           .isA<AmountMustBePositive>();
       check(sut.state).equals(before);
-    }, tags: 'deposit_amount_positive_negative');
-  }, tags: 'deposit_amount_positive');
+    }, tags: 'deposit_amount_positive_negative',);
+  }, tags: 'deposit_amount_positive',);
 }

@@ -1,7 +1,7 @@
-/// Type override maps and format notes for the [Ledger] contract brief.
+/// Type override maps and format notes for the Ledger contract brief.
 ///
-/// Extracted from the [ContractBrief] construction in [ledgerBrief] so the
-/// same literals are reused for every [domainType] call without repetition.
+/// Extracted from the ContractBrief construction in ledger_brief.dart so the
+/// same literals are reused for every domainType() call without repetition.
 library;
 
 /// `dart:mirrors` cannot see through `extension type`s, so these overrides
@@ -22,13 +22,13 @@ const Map<String, String> accountStateFormatNotes = {
   'version': 'monotonic; advances by one per applied event',
 };
 
-/// Type overrides for [InsufficientFunds] constructor parameters.
+/// Type overrides for `InsufficientFunds` constructor parameters.
 const Map<String, String> insufficientFundsOverrides = {
   'balance': 'Money',
   'requested': 'Money',
 };
 
-/// Type overrides for [DailyLimitExceeded] constructor parameters.
+/// Type overrides for `DailyLimitExceeded` constructor parameters.
 const Map<String, String> dailyLimitExceededOverrides = {
   'limit': 'Money',
   'attempted': 'Money',

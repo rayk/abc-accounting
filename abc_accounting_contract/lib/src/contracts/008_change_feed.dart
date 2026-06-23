@@ -6,7 +6,6 @@ import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
 import '../brief/ledger_brief.dart';
-import '../ledger_checks.dart';
 
 /// Contract for [Ledger.changes] — the state-change stream.
 /// Authored: 2026-06-22. Never modified after initial authoring.
@@ -22,7 +21,7 @@ void changeFeedContract(LedgerFactory factory) {
         'exactly once on [Ledger.changes], in the order the operations '
         'were applied.',
       )
-      ..filterTypes({AccountState, Money}));
+      ..filterTypes({AccountState, Money}),);
 
     test('a series of operations yields states in order', () async {
       final balances = <int>[];
@@ -38,6 +37,6 @@ void changeFeedContract(LedgerFactory factory) {
 
       await sub.cancel();
       check(balances).deepEquals([200, 250, 220, 220, 200]);
-    }, tags: 'change_feed_ordering_balance');
-  }, tags: 'change_feed_ordering');
+    }, tags: 'change_feed_ordering_balance',);
+  }, tags: 'change_feed_ordering',);
 }

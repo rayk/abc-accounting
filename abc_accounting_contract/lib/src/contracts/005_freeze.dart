@@ -21,28 +21,28 @@ void freezeContract(LedgerFactory factory) {
         'freeze is idempotent: calling it twice does not error and '
         'the account remains frozen.',
       )
-      ..filterTypes({AccountState}));
+      ..filterTypes({AccountState}),);
 
     test('calling freeze twice does not error', () async {
       await sut.freeze();
       await sut.freeze(); // second call must not throw
       check(sut.state).status.equals(AccountStatus.frozen);
-    }, tags: 'freeze_idempotent_double_call');
-  }, tags: 'freeze_idempotent');
+    }, tags: 'freeze_idempotent_double_call',);
+  }, tags: 'freeze_idempotent',);
 
   group('freeze — AccountNotActive', () {
     setUpAll(() => ledgerBrief
       ..setRule(
         'A frozen account rejects money movement with AccountNotActive.',
       )
-      ..filterTypes({AccountNotActive, AccountState}));
+      ..filterTypes({AccountNotActive, AccountState}),);
 
     test('frozen account rejects deposit', () async {
       await sut.freeze();
       check(await sut.deposit(const Money(50)))
           .failure
           .isA<AccountNotActive>();
-    }, tags: 'freeze_not_active_deposit');
+    }, tags: 'freeze_not_active_deposit',);
 
     test('frozen account rejects withdraw', () async {
       await sut.deposit(const Money(100));
@@ -50,6 +50,6 @@ void freezeContract(LedgerFactory factory) {
       check(await sut.withdraw(const Money(10)))
           .failure
           .isA<AccountNotActive>();
-    }, tags: 'freeze_not_active_withdraw');
-  }, tags: 'freeze_not_active');
+    }, tags: 'freeze_not_active_withdraw',);
+  }, tags: 'freeze_not_active',);
 }

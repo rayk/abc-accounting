@@ -21,7 +21,7 @@ void setDailyLimitContract(LedgerFactory factory) {
         'setDailyLimit stores the limit; subsequent withdrawals within '
         'it succeed.',
       )
-      ..filterTypes({AccountState, Money}));
+      ..filterTypes({AccountState, Money}),);
 
     test('withdrawal within the daily limit succeeds', () async {
       await sut.deposit(const Money(1000));
@@ -30,8 +30,8 @@ void setDailyLimitContract(LedgerFactory factory) {
           .success
           .balance
           .equals(const Money(700));
-    }, tags: 'daily_limit_happy_success');
-  }, tags: 'daily_limit_happy');
+    }, tags: 'daily_limit_happy_success',);
+  }, tags: 'daily_limit_happy',);
 
   group('setDailyLimit — DailyLimitExceeded', () {
     setUpAll(() => ledgerBrief
@@ -39,7 +39,7 @@ void setDailyLimitContract(LedgerFactory factory) {
         'A withdrawal beyond the daily limit is rejected with '
         'DailyLimitExceeded.',
       )
-      ..filterTypes({DailyLimitExceeded, AccountState, Money}));
+      ..filterTypes({DailyLimitExceeded, AccountState, Money}),);
 
     test('withdrawal exceeding the daily limit returns DailyLimitExceeded',
         () async {
@@ -48,6 +48,6 @@ void setDailyLimitContract(LedgerFactory factory) {
       check(await sut.withdraw(const Money(400)))
           .failure
           .isA<DailyLimitExceeded>();
-    }, tags: 'daily_limit_exceeded_over');
-  }, tags: 'daily_limit_exceeded');
+    }, tags: 'daily_limit_exceeded_over',);
+  }, tags: 'daily_limit_exceeded',);
 }
