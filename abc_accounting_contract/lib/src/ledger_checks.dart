@@ -23,15 +23,15 @@ import 'package:fpdart/fpdart.dart';
 extension LedgerResultChecks on Subject<Either<LedgerError, AccountState>> {
   /// Narrows to the success branch, rejecting a [LedgerError] (`Left`).
   Subject<AccountState> get success => context.nest<AccountState>(
-        () => ['completes with an AccountState (Right)'],
-        unwrapRight,
-      );
+    () => ['completes with an AccountState (Right)'],
+    unwrapRight,
+  );
 
   /// Narrows to the failure branch, rejecting an [AccountState] (`Right`).
   Subject<LedgerError> get failure => context.nest<LedgerError>(
-        () => ['completes with a LedgerError (Left)'],
-        unwrapLeft,
-      );
+    () => ['completes with a LedgerError (Left)'],
+    unwrapLeft,
+  );
 }
 
 /// Field accessors on an [AccountState] subject, so a contract check reads

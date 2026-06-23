@@ -10,3 +10,11 @@ workspace:
   - abc_accounting
   - abc_accounting_impl
   - abc_accounting_contract
+
+# Dev loop for the bnd_eac engine build (CONTRACT_AUTHORING_SPEC.md).
+# Points every bnd_eac reference (incl. the contract package's git pin) at the
+# local working copy so engine edits are picked up without re-pinning.
+# REMOVE + re-pin to a published SHA when the build lands.
+dependency_overrides:
+  bnd_eac:
+    path: /Users/rayk/bounded-fixtures/bnd-eac

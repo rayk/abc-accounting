@@ -52,79 +52,85 @@ final class ReferenceLedger extends Ledger {
   }
 
   @override
-  LedgerResult deposit(Money amount,
-          {Option<CommandId> idempotencyKey = const None(),}) =>
-      _apply(idempotencyKey, (s) {
-        if (!s.status.canTransact) {
-          return Either.left(AccountNotActive(s.status));
-        }
-        if (!amount.isPositive) {
-          return Either.left(AmountMustBePositive(amount));
-        }
-        return Either.of(
-          s.copyWith(balance: s.balance + amount, version: s.version.next),
-        );
-      });
+  LedgerResult deposit(
+    Money amount, {
+    Option<CommandId> idempotencyKey = const None(),
+  }) => _apply(idempotencyKey, (s) {
+    if (!s.status.canTransact) {
+      return Either.left(AccountNotActive(s.status));
+    }
+    if (!amount.isPositive) {
+      return Either.left(AmountMustBePositive(amount));
+    }
+    return Either.of(
+      s.copyWith(balance: s.balance + amount, version: s.version.next),
+    );
+  });
 
   @override
-  LedgerResult withdraw(Money amount,
-          {Option<CommandId> idempotencyKey = const None(),}) =>
-      _apply(idempotencyKey, (s) {
-        if (!s.status.canTransact) {
-          return Either.left(AccountNotActive(s.status));
-        }
-        if (!amount.isPositive) {
-          return Either.left(AmountMustBePositive(amount));
-        }
-        if (amount > s.balance) {
-          return Either.left(
-            InsufficientFunds(balance: s.balance, requested: amount),
-          );
-        }
-        final projected = s.withdrawnToday + amount;
-        final overLimit =
-            s.dailyLimit.match(() => false, (limit) => projected > limit);
-        if (overLimit) {
-          return Either.left(
-            DailyLimitExceeded(
-              limit: s.dailyLimit.getOrElse(() => Money.zero),
-              attempted: projected,
-            ),
-          );
-        }
-        return Either.of(s.copyWith(
-          balance: s.balance - amount,
-          withdrawnToday: projected,
-          version: s.version.next,
-        ),);
-      });
+  LedgerResult withdraw(
+    Money amount, {
+    Option<CommandId> idempotencyKey = const None(),
+  }) => _apply(idempotencyKey, (s) {
+    if (!s.status.canTransact) {
+      return Either.left(AccountNotActive(s.status));
+    }
+    if (!amount.isPositive) {
+      return Either.left(AmountMustBePositive(amount));
+    }
+    if (amount > s.balance) {
+      return Either.left(
+        InsufficientFunds(balance: s.balance, requested: amount),
+      );
+    }
+    final projected = s.withdrawnToday + amount;
+    final overLimit = s.dailyLimit.match(
+      () => false,
+      (limit) => projected > limit,
+    );
+    if (overLimit) {
+      return Either.left(
+        DailyLimitExceeded(
+          limit: s.dailyLimit.getOrElse(() => Money.zero),
+          attempted: projected,
+        ),
+      );
+    }
+    return Either.of(
+      s.copyWith(
+        balance: s.balance - amount,
+        withdrawnToday: projected,
+        version: s.version.next,
+      ),
+    );
+  });
 
   @override
   LedgerResult setDailyLimit(Money limit) => _apply(const None(), (s) {
-        if (s.status == AccountStatus.closed) {
-          return Either.left(AccountNotActive(s.status));
-        }
-        if (s.dailyLimit == Option.of(limit)) return Either.of(s); // no-op
-        return Either.of(
-          s.copyWith(dailyLimit: Option.of(limit), version: s.version.next),
-        );
-      });
+    if (s.status == AccountStatus.closed) {
+      return Either.left(AccountNotActive(s.status));
+    }
+    if (s.dailyLimit == Option.of(limit)) return Either.of(s); // no-op
+    return Either.of(
+      s.copyWith(dailyLimit: Option.of(limit), version: s.version.next),
+    );
+  });
 
   @override
   LedgerResult freeze() => _apply(const None(), (s) {
-        if (s.status != AccountStatus.open) return Either.of(s); // no-op
-        return Either.of(
-          s.copyWith(status: AccountStatus.frozen, version: s.version.next),
-        );
-      });
+    if (s.status != AccountStatus.open) return Either.of(s); // no-op
+    return Either.of(
+      s.copyWith(status: AccountStatus.frozen, version: s.version.next),
+    );
+  });
 
   @override
   LedgerResult closeAccount() => _apply(const None(), (s) {
-        if (s.status == AccountStatus.closed) return Either.of(s); // no-op
-        return Either.of(
-          s.copyWith(status: AccountStatus.closed, version: s.version.next),
-        );
-      });
+    if (s.status == AccountStatus.closed) return Either.of(s); // no-op
+    return Either.of(
+      s.copyWith(status: AccountStatus.closed, version: s.version.next),
+    );
+  });
 
   @override
   Future<void> dispose() => _changes.close();

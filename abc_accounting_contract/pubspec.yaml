@@ -5,7 +5,8 @@ version: 0.1.0
 publish_to: none
 
 environment:
-  sdk: ">=3.5.0 <4.0.0"
+  # Bumped to >=3.8.0 for parameterized_test 2.0.3 (Phase 6 tables).
+  sdk: ">=3.8.0 <4.0.0"
 
 resolution: workspace
 
@@ -15,7 +16,6 @@ dependencies:
   checks: ^0.3.1
   fpdart: ^1.2.0
   test: ^1.25.0
-  glados: ^1.1.7
   bnd_eac:
     git:
       url: https://github.com/rayk/bounded.git
@@ -23,4 +23,6 @@ dependencies:
       path: packages/bnd-eac
 
 dev_dependencies:
+  # Phase 6 negative-case tables (CONTRACT_AUTHORING_SPEC §step 6).
+  parameterized_test: ^2.0.3
   very_good_analysis: ^10.2.0

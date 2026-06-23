@@ -11,8 +11,10 @@ String _versionOf(Uri pubspecUri) {
   if (!file.existsSync()) {
     throw StateError('cannot find pubspec at ${file.path}');
   }
-  final match = RegExp(r'^version:\s*(\S+)', multiLine: true)
-      .firstMatch(file.readAsStringSync());
+  final match = RegExp(
+    r'^version:\s*(\S+)',
+    multiLine: true,
+  ).firstMatch(file.readAsStringSync());
   if (match == null) throw StateError('no version: in ${file.path}');
   return match.group(1)!;
 }

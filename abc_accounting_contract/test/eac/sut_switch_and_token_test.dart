@@ -1,3 +1,10 @@
+/// SUT-switch + token-guard invariants (preserved from the retired legacy
+/// `reference_conformance_test.dart`).
+///
+/// These are interface-level guarantees independent of the conformance DSL:
+/// the [LedgerUnderTest] switch defaults to the red stub and can be pointed at
+/// the green reference, and [Ledger.verify] rejects an implementation that does
+/// not pass the shared construction token.
 @TestOn('vm')
 library;
 
@@ -6,18 +13,12 @@ import 'package:test/test.dart';
 
 /// A wrong-token implementation: it `extends Ledger` but does not pass
 /// `Ledger.token`, so [Ledger.verify] rejects it (the same way an
-/// `implements Ledger` class — which never runs the constructor — is
-/// rejected).
+/// `implements Ledger` class — which never runs the constructor — is rejected).
 final class _WrongTokenLedger extends Ledger {
   _WrongTokenLedger() : super(token: Object());
 }
 
 void main() {
-  // The conformance suite is GREEN against the in-package reference
-  // implementation: proof the contract is executable and self-consistent
-  // before any production implementation exists.
-  ledgerAcceptance('ReferenceLedger', ReferenceLedger.open);
-
   group('the SUT switch (the switch in the contract package)', () {
     tearDown(LedgerUnderTest.useStub);
 

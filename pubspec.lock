@@ -34,13 +34,11 @@ packages:
     source: hosted
     version: "2.13.1"
   bnd_eac:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      path: "packages/bnd-eac"
-      ref: c9de583ec85019807766b6327774b823900a26f4
-      resolved-ref: c9de583ec85019807766b6327774b823900a26f4
-      url: "https://github.com/rayk/bounded.git"
-    source: git
+      path: "/Users/rayk/bounded-fixtures/bnd-eac"
+      relative: false
+    source: path
     version: "0.2.0"
   boolean_selector:
     dependency: transitive
@@ -74,6 +72,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
+  clock:
+    dependency: transitive
+    description:
+      name: clock
+      sha256: fddb70d9b5277016c77a80201021d40a2247104d9f4aa7bab7157b7e3f05b84b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   collection:
     dependency: transitive
     description:
@@ -114,6 +120,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.1"
+  fake_async:
+    dependency: transitive
+    description:
+      name: fake_async
+      sha256: "5368f224a74523e8d2e7399ea1638b37aecfca824a3cc4dfdf77bf1fa905ac44"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.3"
   fast_immutable_collections:
     dependency: transitive
     description:
@@ -234,6 +248,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  parameterized_test:
+    dependency: transitive
+    description:
+      name: parameterized_test
+      sha256: c8b881ed654555f710cbe71f76e189d6b7864bd3b09dd02490885e030ef1729d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   path:
     dependency: transitive
     description:

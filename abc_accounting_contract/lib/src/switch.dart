@@ -1,6 +1,6 @@
 import 'package:abc_accounting/abc_accounting.dart';
 
-import 'conformance.dart';
+import 'eac/ledger_conformance.dart';
 import 'reference_abc_accounting.dart';
 
 /// The **switch in the contract package**: a settable factory that selects
@@ -27,5 +27,5 @@ abstract final class LedgerUnderTest {
 
   /// Run the conformance suite against whatever the switch currently selects.
   static void runConformance(String name) =>
-      ledgerAcceptance(name, factory);
+      eacLedgerConformance(name, factory);
 }
