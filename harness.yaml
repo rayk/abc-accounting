@@ -1,0 +1,5 @@
+domain: Ledger
+interface: abc_accounting
+impl: abc_accounting_impl
+contract: abc_accounting_contract
+impl_class: AccountLedger

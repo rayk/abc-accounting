@@ -1,0 +1,24 @@
+name: abc_accounting_impl
+description: >-
+  Workspace-only implementation of abc_accounting. Merged into abc_accounting
+  at release by tool/collapse.dart. Never published independently.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+resolution: workspace
+
+dependencies:
+  abc_accounting:
+    path: ../abc_accounting
+  fpdart: ^1.2.0
+  fast_immutable_collections: ^11.0.0
+  riverpod: ^2.6.0
+
+dev_dependencies:
+  test: ^1.25.0
+  glados: ^1.1.7
+  dart_arch_test: ^0.3.1
+  very_good_analysis: ^10.2.0

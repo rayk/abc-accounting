@@ -1,0 +1,19 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+linter:
+  rules:
+    # The spec explicitly requires relative imports within lib/src/ to prevent
+    # circular dependencies through the package barrel (conformance.dart imports
+    # contract files; contract files must not import the barrel back).
+    always_use_package_imports: false
+
+    # Numbered filenames (001_open.dart, 002_deposit.dart) are required by the
+    # additive-migration principle — they encode authoring order and sort
+    # chronologically. They are intentional, not a naming error.
+    file_names: false
+
+    # Library directives are required by @Tags and @TestOn annotations.
+    unnecessary_library_directive: false
+
+    # pubspec.yaml dependencies are ordered by logical role, not alphabetically.
+    sort_pub_dependencies: false

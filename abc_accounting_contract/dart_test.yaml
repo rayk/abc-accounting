@@ -1,0 +1,3 @@
+tags:
+  pending:
+    skip: "spec written; implementation pending — run with --run-skipped -t pending"
