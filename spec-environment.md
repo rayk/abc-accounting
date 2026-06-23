@@ -85,7 +85,7 @@ complete cold-start kit — no conversation context required.
 | Contract files (8) | `abc_accounting_contract/lib/src/contracts/001_open.dart .. 008_change_feed.dart` |
 | Ledger / vocabulary | `abc_accounting/lib/src/contract/{ledger,vocabulary}.dart` |
 | Order-dependent scenario (re-author for random order) | `abc_accounting_contract/lib/src/scenarios/001_account_lifecycle.dart` |
-| User's original declarative draft | `abc_accounting_contract/lib/contract-draft.md` (untracked) |
+| User's original declarative draft | `abc_accounting_contract/lib/contract-draft.md` |
 
 ## Provenance & baseline
 

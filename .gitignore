@@ -33,3 +33,6 @@ mutation-test-report/
 
 .harness_scratch/
 .release/
+
+# Claude Code local state (worktree mounts, agent scratch)
+.claude/
