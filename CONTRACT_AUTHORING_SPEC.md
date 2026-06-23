@@ -551,3 +551,59 @@ Engine build sequence:
 7. `runSequence` async driver; seam-throw first-class; harness re-implements the glados
    explore+shrink loop (not `.test()`); sidecar with `gladosSeed` + `orderingSeed`;
    `cmo_failures` binding; derived tags + stable IDs.
+
+---
+
+## 10. Unverified — mechanical lints that may improve contract correctness
+
+> **Status: UNVERIFIED / speculative.** Nothing here is built or validated. These are candidate
+> *mechanical* checks (an analyzer rule, a structural scan, or a contract-load-time assertion) that
+> *might* catch authoring mistakes — listed for later evaluation, NOT part of the proven design.
+> Several restate a verified *finding* as an as-yet-unproven *lint*. Promote an entry out of this
+> section only after prototyping it and confirming it catches the real mistake without false positives.
+
+**Declaration & shape**
+- **Bool-shaped Rule** — a `Rule.condition` bottoming out in `isTrue()` / a bare bool renders
+  `which = null` (unsteerable); require equals/relational conditions.
+- **Non-atomic Rule** — a `Rule.text` containing a conjunction ("and", comma-joined clauses) should
+  be split into separate Rules.
+- **Mirror-structure assumption** — a `type<T>` / `signature` over an extension-type or typedef that
+  relies on mirror-derived structure instead of an authored type-string.
+- **`old()` misplacement** — `old(...)` used anywhere except inside an `ensures` clause.
+- **FailureMode field existence** — a `FailureMode.where` accessing a field the error variant does
+  not declare (e.g. `.code` on `LedgerError`); resolve against the real sealed hierarchy.
+
+**Tags & identity**
+- **Colon in a `--tags` tag** — any derived/authored tag containing `:` or `.` (illegal in
+  `dart test --tags`); stable sidecar IDs are exempt (never passed to `--tags`).
+- **Stream/sequence not serial** — a stream-shaped or `sequence(...)` case missing
+  `kind-stream` / `kind-sequence` (it would run in parallel and corrupt order).
+
+**Execution & async**
+- **Sync `softCheck` over an async act** — wiring a synchronous `softCheck` over a `Future`/`Stream`
+  (silent false-PASS); require `softCheckAsync`.
+- **StreamQueue emit-before-pull** — emitting to a broadcast controller before a `.next`/`.take`
+  request is pending (events dropped; `eventsDispatched` stays 0).
+- **Real time/IO inside `fakeAsync`** — `DateTime.now()` / `Stopwatch` / real I/O in a `fakeAsync`
+  body (escapes the virtual clock; use `clock.now()`).
+- **`assume()` in a law** — skews the generator distribution; prefer a restricted generator.
+- **`Result.release` as instance** — it is static (`Result.release(captured)`), not an instance method.
+
+**Steering quality**
+- **Negative phrasing** — "do not" / "must not" / "does not" in `Rule.text` or `FailureMode.steer`
+  (the renderer concatenates verbatim — no negation inversion); require a positive imperative.
+- **Untyped map hop** — a `Condition` doing a dynamic `m['k']` access without a typed `field<R>()`
+  + `containsKey` guard (vacuous false-pass on a missing key).
+
+**Coverage**
+- **Unbound / unknown-rule join** — a declared `Rule`/`FailureMode` with no binding, or a binding
+  citing an unknown unit (the §1 enforced join, surfaced as a standing lint).
+- **Unexercised failure mode** — a declared `FailureMode` with no `requires` predicate or negative
+  `Case` that triggers it (declared but never proven reachable).
+- **Declared-but-unasserted `effects`** — a signature declaring `effects` that no case asserts
+  (commit / rollback / at-most-once).
+- **Inventory import resolves** — any inventory import absent from the target `pubspec.yaml` graph.
+
+**Hygiene**
+- **Stale provenance stamp** — a "Never modified" / `Authored:` stamp on a file whose git history
+  shows later modification.
