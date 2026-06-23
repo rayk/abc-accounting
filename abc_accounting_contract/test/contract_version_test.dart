@@ -17,11 +17,27 @@ String _versionOf(Uri pubspecUri) {
   return match.group(1)!;
 }
 
+/// Walks up from [start] until it finds a directory containing harness.yaml
+/// (the workspace root marker), or throws [StateError].
+Directory _workspaceRoot(Directory start) {
+  var dir = start;
+  while (true) {
+    if (File('${dir.path}/harness.yaml').existsSync()) return dir;
+    final parent = dir.parent;
+    if (parent.path == dir.path) {
+      throw StateError(
+        'Cannot locate workspace root from ${start.path} — '
+        'no harness.yaml found walking upward.',
+      );
+    }
+    dir = parent;
+  }
+}
+
 void main() {
-  // dart test resolves Platform.script to a temp bootstrap file, not the test
-  // file. Use Directory.current (the workspace root when dart test is run from
-  // the workspace root) to anchor paths instead.
-  final workspaceRoot = Directory.current.uri;
+  // Anchor on harness.yaml so the test works regardless of whether dart test
+  // is invoked from the workspace root or from inside the package directory.
+  final workspaceRoot = _workspaceRoot(Directory.current).uri;
   final contractPubspecUri = workspaceRoot.resolve('abc_accounting_contract/pubspec.yaml');
   final interfacePubspecUri = workspaceRoot.resolve('abc_accounting/pubspec.yaml');
 
