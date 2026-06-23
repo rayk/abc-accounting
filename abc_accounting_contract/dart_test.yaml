@@ -1,3 +1,6 @@
 tags:
   pending:
     skip: "spec written; implementation pending — run with --run-skipped -t pending"
+  # Scenario tag declarations — no special behaviour, suppresses unknown-tag warning.
+  scenario: {}
+  scenario_lifecycle: {}
