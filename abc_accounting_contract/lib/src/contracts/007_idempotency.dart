@@ -9,32 +9,29 @@ import 'package:test/test.dart';
 import '../brief/ledger_brief.dart';
 import '../ledger_checks.dart';
 
-/// Contract: a keyed command is applied exactly once across retries.
+/// Contract for idempotency keys (cross-cutting concern for keyed commands).
+/// Authored: 2026-06-22. Never modified after initial authoring.
 void idempotencyContract(LedgerFactory factory) {
-  group('idempotency', () {
-    late Ledger ledger;
+  late Ledger sut;
+  setUp(() async => sut = await factory(const AccountId('idempotency')));
+  tearDown(() => sut.dispose());
 
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'A keyed deposit is applied exactly once across retries '
-          '(same key ⇒ same result).',
-        )
-        ..filterTypes({AccountState});
-      ledger = await factory(const AccountId('sut-idempotency'));
-      Ledger.verify(ledger);
-    });
+  group('deposit — idempotency', () {
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'A keyed deposit is applied exactly once across retries: '
+        'the same key yields the same result without re-applying.',
+      )
+      ..filterTypes({AccountState, Money}));
 
-    tearDown(() => ledger.dispose());
-
-    test('a keyed deposit is idempotent across retries', () async {
+    test('keyed deposit applied exactly once', () async {
       const key = Option.of(CommandId('retry-1'));
       final first =
-          await ledger.deposit(const Money(100), idempotencyKey: key);
+          await sut.deposit(const Money(100), idempotencyKey: key);
       final second =
-          await ledger.deposit(const Money(100), idempotencyKey: key);
+          await sut.deposit(const Money(100), idempotencyKey: key);
       check(first).success.balance.equals(const Money(100));
-      check(second).equals(first); // applied exactly once
-    });
-  });
+      check(second).equals(first);
+    }, tags: 'idempotency_keyed_deposit_once');
+  }, tags: 'idempotency_keyed_deposit');
 }

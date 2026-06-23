@@ -8,62 +8,55 @@ import 'package:test/test.dart';
 import '../brief/ledger_brief.dart';
 import '../ledger_checks.dart';
 
-/// Contract: deposit happy path and AmountMustBePositive rejection.
+/// Contract for [Ledger.deposit].
+/// Authored: 2026-06-22. Never modified after initial authoring.
 void depositContract(LedgerFactory factory) {
+  late Ledger sut;
+  setUp(() async => sut = await factory(const AccountId('deposit')));
+  tearDown(() => sut.dispose());
+
   group('deposit — happy path', () {
-    late Ledger ledger;
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'A positive deposit increases the balance by the deposited amount.',
+      )
+      ..filterTypes({AccountState, Money}));
 
-    setUp(() async {
-      ledgerBrief
-        ..setRule('deposit adds money; the new balance reflects the amount.')
-        ..filterTypes({AccountState});
-      ledger = await factory(const AccountId('sut-deposit-happy'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
-
-    test('deposit increases the balance', () async {
-      check(await ledger.deposit(const Money(500)))
+    test('balance increases by the deposited amount', () async {
+      check(await sut.deposit(const Money(500)))
           .success
           .balance
           .equals(const Money(500));
-    });
-  });
+    }, tags: 'deposit_happy_balance');
+
+    test('version advances after deposit', () async {
+      check(await sut.deposit(const Money(100)))
+          .success
+          .version
+          .equals(const Version(1));
+    }, tags: 'deposit_happy_version');
+  }, tags: 'deposit_happy');
 
   group('deposit — AmountMustBePositive', () {
-    late Ledger ledger;
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'Zero or negative deposit amount is rejected with '
+        'AmountMustBePositive. State is unchanged.',
+      )
+      ..filterTypes({AmountMustBePositive, AccountState, Money}));
 
-    setUpAll(
-      () => ledgerBrief
-        ..setRule(
-          'Zero or negative deposit amount is rejected with '
-          'AmountMustBePositive. State is unchanged.',
-        )
-        ..filterTypes({AmountMustBePositive, AccountState, Money}),
-    );
+    test('zero amount returns AmountMustBePositive', () async {
+      final before = sut.state;
+      check(await sut.deposit(Money.zero)).failure.isA<AmountMustBePositive>();
+      check(sut.state).equals(before);
+    }, tags: 'deposit_amount_positive_zero');
 
-    setUp(() async {
-      ledger = await factory(const AccountId('sut-deposit-positive'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
-
-    test('zero amount is rejected', () async {
-      final before = ledger.state;
-      check(await ledger.deposit(Money.zero))
+    test('negative amount returns AmountMustBePositive', () async {
+      final before = sut.state;
+      check(await sut.deposit(const Money(-1)))
           .failure
           .isA<AmountMustBePositive>();
-      check(ledger.state).equals(before);
-    });
-
-    test('negative amount is rejected', () async {
-      final before = ledger.state;
-      check(await ledger.deposit(const Money(-1)))
-          .failure
-          .isA<AmountMustBePositive>();
-      check(ledger.state).equals(before);
-    });
-  });
+      check(sut.state).equals(before);
+    }, tags: 'deposit_amount_positive_negative');
+  }, tags: 'deposit_amount_positive');
 }

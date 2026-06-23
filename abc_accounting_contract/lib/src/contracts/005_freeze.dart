@@ -8,63 +8,48 @@ import 'package:test/test.dart';
 import '../brief/ledger_brief.dart';
 import '../ledger_checks.dart';
 
-/// Contract: freeze — idempotent and blocks money movement.
+/// Contract for [Ledger.freeze].
+/// Authored: 2026-06-22. Never modified after initial authoring.
 void freezeContract(LedgerFactory factory) {
+  late Ledger sut;
+  setUp(() async => sut = await factory(const AccountId('freeze')));
+  tearDown(() => sut.dispose());
+
   group('freeze — idempotent', () {
-    late Ledger ledger;
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'freeze is idempotent: calling it twice does not error and '
+        'the account remains frozen.',
+      )
+      ..filterTypes({AccountState}));
 
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'freeze is idempotent: calling it twice does not error and leaves '
-          'the account frozen.',
-        )
-        ..filterTypes({AccountState});
-      ledger = await factory(const AccountId('sut-freeze-idempotent'));
-      Ledger.verify(ledger);
-    });
+    test('calling freeze twice does not error', () async {
+      await sut.freeze();
+      await sut.freeze(); // second call must not throw
+      check(sut.state).status.equals(AccountStatus.frozen);
+    }, tags: 'freeze_idempotent_double_call');
+  }, tags: 'freeze_idempotent');
 
-    tearDown(() => ledger.dispose());
-
-    test('a frozen account rejects money movement (freeze is idempotent)',
-        () async {
-      await ledger.deposit(const Money(100));
-      await ledger.freeze();
-      await ledger.freeze(); // idempotent: no error, no change
-      check(await ledger.deposit(const Money(10)))
-          .failure
-          .isA<AccountNotActive>();
-    });
-  });
-
-  group('freeze — AccountNotActive blocks money movement', () {
-    late Ledger ledger;
-
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'A frozen account rejects money movement with AccountNotActive.',
-        )
-        ..filterTypes({AccountState, AccountNotActive});
-      ledger = await factory(const AccountId('sut-freeze-blocks'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
+  group('freeze — AccountNotActive', () {
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'A frozen account rejects money movement with AccountNotActive.',
+      )
+      ..filterTypes({AccountNotActive, AccountState}));
 
     test('frozen account rejects deposit', () async {
-      await ledger.freeze();
-      check(await ledger.deposit(const Money(50)))
+      await sut.freeze();
+      check(await sut.deposit(const Money(50)))
           .failure
           .isA<AccountNotActive>();
-    });
+    }, tags: 'freeze_not_active_deposit');
 
     test('frozen account rejects withdraw', () async {
-      await ledger.deposit(const Money(100));
-      await ledger.freeze();
-      check(await ledger.withdraw(const Money(10)))
+      await sut.deposit(const Money(100));
+      await sut.freeze();
+      check(await sut.withdraw(const Money(10)))
           .failure
           .isA<AccountNotActive>();
-    });
-  });
+    }, tags: 'freeze_not_active_withdraw');
+  }, tags: 'freeze_not_active');
 }

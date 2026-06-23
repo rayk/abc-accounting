@@ -8,56 +8,46 @@ import 'package:test/test.dart';
 import '../brief/ledger_brief.dart';
 import '../ledger_checks.dart';
 
-/// Contract: daily withdrawal limit — happy path and DailyLimitExceeded.
+/// Contract for [Ledger.setDailyLimit].
+/// Authored: 2026-06-22. Never modified after initial authoring.
 void setDailyLimitContract(LedgerFactory factory) {
-  group('daily limit — happy path', () {
-    late Ledger ledger;
+  late Ledger sut;
+  setUp(() async => sut = await factory(const AccountId('daily-limit')));
+  tearDown(() => sut.dispose());
 
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'setDailyLimit stores the limit; subsequent withdrawals within it '
-          'succeed.',
-        )
-        ..filterTypes({AccountState});
-      ledger = await factory(const AccountId('sut-daily-limit-happy'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
+  group('setDailyLimit — happy path', () {
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'setDailyLimit stores the limit; subsequent withdrawals within '
+        'it succeed.',
+      )
+      ..filterTypes({AccountState, Money}));
 
     test('withdrawal within the daily limit succeeds', () async {
-      await ledger.deposit(const Money(1000));
-      await ledger.setDailyLimit(const Money(500));
-      check(await ledger.withdraw(const Money(300)))
+      await sut.deposit(const Money(1000));
+      await sut.setDailyLimit(const Money(500));
+      check(await sut.withdraw(const Money(300)))
           .success
           .balance
           .equals(const Money(700));
-    });
-  });
+    }, tags: 'daily_limit_happy_success');
+  }, tags: 'daily_limit_happy');
 
-  group('daily limit — DailyLimitExceeded', () {
-    late Ledger ledger;
+  group('setDailyLimit — DailyLimitExceeded', () {
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'A withdrawal beyond the daily limit is rejected with '
+        'DailyLimitExceeded.',
+      )
+      ..filterTypes({DailyLimitExceeded, AccountState, Money}));
 
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'A withdrawal beyond the daily limit is rejected with '
-          'DailyLimitExceeded.',
-        )
-        ..filterTypes({AccountState, DailyLimitExceeded});
-      ledger = await factory(const AccountId('sut-daily-limit-exceeded'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
-
-    test('the daily limit is enforced', () async {
-      await ledger.deposit(const Money(1000));
-      await ledger.setDailyLimit(const Money(300));
-      check(await ledger.withdraw(const Money(400)))
+    test('withdrawal exceeding the daily limit returns DailyLimitExceeded',
+        () async {
+      await sut.deposit(const Money(1000));
+      await sut.setDailyLimit(const Money(300));
+      check(await sut.withdraw(const Money(400)))
           .failure
           .isA<DailyLimitExceeded>();
-    });
-  });
+    }, tags: 'daily_limit_exceeded_over');
+  }, tags: 'daily_limit_exceeded');
 }

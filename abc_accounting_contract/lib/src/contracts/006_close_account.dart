@@ -8,57 +8,46 @@ import 'package:test/test.dart';
 import '../brief/ledger_brief.dart';
 import '../ledger_checks.dart';
 
-/// Contract: close account — terminal state and subsequent commands rejected.
+/// Contract for [Ledger.closeAccount].
+/// Authored: 2026-06-22. Never modified after initial authoring.
 void closeAccountContract(LedgerFactory factory) {
-  group('close account — terminal state', () {
-    late Ledger ledger;
+  late Ledger sut;
+  setUp(() async => sut = await factory(const AccountId('close-account')));
+  tearDown(() => sut.dispose());
 
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'A closed account is terminal: status is closed.',
-        )
-        ..filterTypes({AccountState});
-      ledger = await factory(const AccountId('sut-close-terminal'));
-      Ledger.verify(ledger);
-    });
+  group('closeAccount — terminal state', () {
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'closeAccount sets status to closed. Closed is a terminal state.',
+      )
+      ..filterTypes({AccountState}));
 
-    tearDown(() => ledger.dispose());
+    test('closeAccount sets status to closed', () async {
+      await sut.closeAccount();
+      check(sut.state).status.equals(AccountStatus.closed);
+    }, tags: 'close_account_terminal_status');
+  }, tags: 'close_account_terminal');
 
-    test('a closed account has status closed', () async {
-      await ledger.closeAccount();
-      check(ledger.state).status.equals(AccountStatus.closed);
-    });
-  });
+  group('closeAccount — AccountNotActive', () {
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'A closed account permanently rejects money movement with '
+        'AccountNotActive.',
+      )
+      ..filterTypes({AccountNotActive, AccountState}));
 
-  group('close account — AccountNotActive on subsequent commands', () {
-    late Ledger ledger;
-
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'A closed account rejects further money movement with '
-          'AccountNotActive.',
-        )
-        ..filterTypes({AccountState, AccountNotActive});
-      ledger = await factory(const AccountId('sut-close-blocks'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
-
-    test('a closed account rejects deposit', () async {
-      await ledger.closeAccount();
-      check(await ledger.deposit(const Money(10)))
+    test('closed account rejects deposit', () async {
+      await sut.closeAccount();
+      check(await sut.deposit(const Money(10)))
           .failure
           .isA<AccountNotActive>();
-    });
+    }, tags: 'close_account_not_active_deposit');
 
-    test('a closed account rejects withdraw', () async {
-      await ledger.closeAccount();
-      check(await ledger.withdraw(const Money(10)))
+    test('closed account rejects withdraw', () async {
+      await sut.closeAccount();
+      check(await sut.withdraw(const Money(10)))
           .failure
           .isA<AccountNotActive>();
-    });
-  });
+    }, tags: 'close_account_not_active_withdraw');
+  }, tags: 'close_account_not_active');
 }

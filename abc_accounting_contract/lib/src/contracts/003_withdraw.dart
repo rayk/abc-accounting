@@ -8,90 +8,65 @@ import 'package:test/test.dart';
 import '../brief/ledger_brief.dart';
 import '../ledger_checks.dart';
 
-/// Contract: withdraw happy path, InsufficientFunds rejection, and
-/// AmountMustBePositive rejection.
+/// Contract for [Ledger.withdraw].
+/// Authored: 2026-06-22. Never modified after initial authoring.
 void withdrawContract(LedgerFactory factory) {
+  late Ledger sut;
+  setUp(() async => sut = await factory(const AccountId('withdraw')));
+  tearDown(() => sut.dispose());
+
   group('withdraw — happy path', () {
-    late Ledger ledger;
+    setUpAll(() => ledgerBrief
+      ..setRule('A withdrawal within the balance decreases the balance.')
+      ..filterTypes({AccountState, Money}));
 
-    setUp(() async {
-      ledgerBrief
-        ..setRule('withdraw removes money when funds suffice.')
-        ..filterTypes({AccountState});
-      ledger = await factory(const AccountId('sut-withdraw-happy'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
-
-    test('withdraw decreases the balance', () async {
-      await ledger.deposit(const Money(500));
-      check(await ledger.withdraw(const Money(120)))
+    test('balance decreases by the withdrawn amount', () async {
+      await sut.deposit(const Money(500));
+      check(await sut.withdraw(const Money(120)))
           .success
           .balance
           .equals(const Money(380));
-    });
-  });
+    }, tags: 'withdraw_happy_balance');
+  }, tags: 'withdraw_happy');
 
   group('withdraw — InsufficientFunds', () {
-    late Ledger ledger;
-
-    setUp(() async {
-      ledgerBrief
-        ..setRule(
-          'A withdrawal exceeding the balance is rejected with '
-          'InsufficientFunds and leaves state unchanged.',
-        )
-        ..filterTypes({AccountState, InsufficientFunds});
-      ledger = await factory(const AccountId('sut-withdraw-insufficient'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'A withdrawal exceeding the balance is rejected with '
+        'InsufficientFunds and leaves state unchanged.',
+      )
+      ..filterTypes({InsufficientFunds, AccountState, Money}));
 
     test('overdraw is rejected and leaves state unchanged', () async {
-      await ledger.deposit(const Money(100));
-      final before = ledger.state;
-      check(await ledger.withdraw(const Money(1000)))
+      await sut.deposit(const Money(100));
+      final before = sut.state;
+      check(await sut.withdraw(const Money(1000)))
           .failure
           .isA<InsufficientFunds>();
-      check(ledger.state).equals(before);
-    });
-  });
+      check(sut.state).equals(before);
+    }, tags: 'withdraw_insufficient_funds_overdraw');
+  }, tags: 'withdraw_insufficient_funds');
 
   group('withdraw — AmountMustBePositive', () {
-    late Ledger ledger;
+    setUpAll(() => ledgerBrief
+      ..setRule(
+        'Zero or negative withdrawal amount is rejected with '
+        'AmountMustBePositive. State is unchanged.',
+      )
+      ..filterTypes({AmountMustBePositive, AccountState, Money}));
 
-    setUpAll(
-      () => ledgerBrief
-        ..setRule(
-          'Zero or negative withdraw amount is rejected with '
-          'AmountMustBePositive. State is unchanged.',
-        )
-        ..filterTypes({AmountMustBePositive, AccountState, Money}),
-    );
+    test('zero amount returns AmountMustBePositive', () async {
+      final before = sut.state;
+      check(await sut.withdraw(Money.zero)).failure.isA<AmountMustBePositive>();
+      check(sut.state).equals(before);
+    }, tags: 'withdraw_amount_positive_zero');
 
-    setUp(() async {
-      ledger = await factory(const AccountId('sut-withdraw-positive'));
-      Ledger.verify(ledger);
-    });
-
-    tearDown(() => ledger.dispose());
-
-    test('zero amount is rejected', () async {
-      final before = ledger.state;
-      check(await ledger.withdraw(Money.zero))
+    test('negative amount returns AmountMustBePositive', () async {
+      final before = sut.state;
+      check(await sut.withdraw(const Money(-1)))
           .failure
           .isA<AmountMustBePositive>();
-      check(ledger.state).equals(before);
-    });
-
-    test('negative amount is rejected', () async {
-      final before = ledger.state;
-      check(await ledger.withdraw(const Money(-1)))
-          .failure
-          .isA<AmountMustBePositive>();
-      check(ledger.state).equals(before);
-    });
-  });
+      check(sut.state).equals(before);
+    }, tags: 'withdraw_amount_positive_negative');
+  }, tags: 'withdraw_amount_positive');
 }

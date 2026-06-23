@@ -1,6 +1,57 @@
 tags:
   pending:
     skip: "spec written; implementation pending — run with --run-skipped -t pending"
-  # Scenario tag declarations — no special behaviour, suppresses unknown-tag warning.
+
+  # ── Contract file-level tags ───────────────────────────────────────────────
+  open: {}
+  deposit: {}
+  withdraw: {}
+  daily_limit: {}
+  freeze: {}
+  close_account: {}
+  idempotency: {}
+  change_feed: {}
+
+  # ── Group-level tags (operation_clause) ────────────────────────────────────
+  open_initial: {}
+  deposit_happy: {}
+  deposit_amount_positive: {}
+  withdraw_happy: {}
+  withdraw_insufficient_funds: {}
+  withdraw_amount_positive: {}
+  daily_limit_happy: {}
+  daily_limit_exceeded: {}
+  freeze_idempotent: {}
+  freeze_not_active: {}
+  close_account_terminal: {}
+  close_account_not_active: {}
+  idempotency_keyed_deposit: {}
+  change_feed_ordering: {}
+
+  # ── Test-level tags (operation_clause_variant) ─────────────────────────────
+  open_initial_state: {}
+  deposit_happy_balance: {}
+  deposit_happy_version: {}
+  deposit_amount_positive_zero: {}
+  deposit_amount_positive_negative: {}
+  withdraw_happy_balance: {}
+  withdraw_insufficient_funds_overdraw: {}
+  withdraw_amount_positive_zero: {}
+  withdraw_amount_positive_negative: {}
+  daily_limit_happy_success: {}
+  daily_limit_exceeded_over: {}
+  freeze_idempotent_double_call: {}
+  freeze_not_active_deposit: {}
+  freeze_not_active_withdraw: {}
+  close_account_terminal_status: {}
+  close_account_not_active_deposit: {}
+  close_account_not_active_withdraw: {}
+  idempotency_keyed_deposit_once: {}
+  change_feed_ordering_balance: {}
+
+  # ── Scenario tags ──────────────────────────────────────────────────────────
   scenario: {}
   scenario_lifecycle: {}
+
+  # ── Property tags ──────────────────────────────────────────────────────────
+  property: {}

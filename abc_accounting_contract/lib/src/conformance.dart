@@ -28,7 +28,10 @@ import 'scenarios/001_account_lifecycle.dart';
 /// [Ledger].
 void ledgerAcceptance(String name, LedgerFactory factory) {
   group(name, () {
-    setUp(ledgerBrief.install);
+    // setUpAll so install runs before any inner setUpAll (which calls
+    // setRule/filterTypes). setUp would run AFTER inner setUpAll, which
+    // means filterTypes would be called before install — causing an error.
+    setUpAll(ledgerBrief.install);
 
     openContract(factory);
     depositContract(factory);
