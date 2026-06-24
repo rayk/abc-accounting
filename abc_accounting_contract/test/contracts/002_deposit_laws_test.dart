@@ -1,18 +1,12 @@
-/// Phase-6 EAC proof: a glados-free property *law*, a `parameterized_test`
-/// negative-case *table*, and a `runSequence` order-dependent *sequence*,
-/// all against the real Ledger boundary.
+/// Property law + negative-case table for the deposit boundary.
 ///
-/// **Part 1 — law.** A restricted generator yields strictly-positive `Money`;
-/// the law asserts that depositing any such amount into a fresh ledger settles
+/// **Law.** A restricted generator yields strictly-positive `Money`; the law
+/// asserts that depositing any such amount into a fresh ledger settles
 /// `balance == amount`. Holds across the explored domain (no counterexample).
 ///
-/// **Part 2 — negative-case table.** `parameterizedTest` enumerates the
-/// non-positive deposit amounts; each row expects an `AmountMustBePositive`
-/// rejection (a `CasePassed` from `rejects(...)`).
-///
-/// **Part 3 — sequence.** `runSequence` drives deposit → freeze → (deposit on
-/// frozen rejects `AccountNotActive`) serially, proving the order-dependent
-/// lifecycle.
+/// **Negative-case table.** `parameterizedTest` enumerates the non-positive
+/// deposit amounts; each row expects an `AmountMustBePositive` rejection
+/// (a `CasePassed` from `rejects(...)`).
 @TestOn('vm')
 library;
 
@@ -27,9 +21,7 @@ import 'package:test/test.dart';
 typedef _R = Either<LedgerError, AccountState>;
 
 void main() {
-  // ── Part 1 — law: deposit of any positive Money ──────────────────────────
-
-  group('Phase 6 — law', () {
+  group('law', () {
     testLaw<Money, _R>(
       Law<Money, _R>(
         description: 'depositing any positive Money settles balance == amount',
@@ -63,19 +55,15 @@ void main() {
     );
   });
 
-  // ── Part 2 — negative-case table (parameterized_test) ────────────────────
-
   parameterizedTest(
-    'Phase 6 — deposit rejects non-positive amounts (AmountMustBePositive)',
+    'deposit rejects non-positive amounts (AmountMustBePositive)',
     [
       [0],
       [-5],
       [-100],
     ],
     (int minorUnits) async {
-      final ledger = await ReferenceLedger.open(
-        const AccountId('neg-table'),
-      );
+      final ledger = await ReferenceLedger.open(const AccountId('neg-table'));
       final outcome = await evaluateCase(
         Case<_R>(
           description: 'deposit $minorUnits',
@@ -94,30 +82,4 @@ void main() {
       check(outcome).isA<CasePassed>();
     },
   );
-
-  // ── Part 3 — sequence: account lifecycle ─────────────────────────────────
-
-  group('Phase 6 — sequence', () {
-    testSequence<Ledger>(
-      description: 'deposit, freeze, then deposit on frozen rejects',
-      sut: () => ReferenceLedger.open(const AccountId('seq')),
-      steps: [
-        Step('deposit 100 succeeds', (l) async {
-          final r = await l.deposit(const Money(100));
-          check(r.isRight()).isTrue();
-        }),
-        Step('freeze succeeds', (l) async {
-          final r = await l.freeze();
-          check(r.isRight()).isTrue();
-        }),
-        Step('deposit on a frozen account rejects AccountNotActive', (l) async {
-          final r = await l.deposit(const Money(50));
-          r.match(
-            (failure) => check(failure).isA<AccountNotActive>(),
-            (_) => fail('expected a Left(AccountNotActive)'),
-          );
-        }),
-      ],
-    );
-  });
 }

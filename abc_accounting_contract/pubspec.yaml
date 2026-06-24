@@ -16,13 +16,25 @@ dependencies:
   checks: ^0.3.1
   fpdart: ^1.2.0
   test: ^1.25.0
+  # Engine: the standalone rayk/bnd-eac repo (extracted from the old rayk/bounded
+  # monorepo). The contract-authoring DSL (contract/execution/steering) is on
+  # main as of bnd_eac 0.3.0. Tracks the main branch rather than a pinned SHA, so
+  # engine changes flow in on the next `pub get` (run from the workspace root).
+  # For local engine work, add a path override to the workspace-root pubspec.
   bnd_eac:
     git:
-      url: https://github.com/rayk/bounded.git
-      ref: 'c9de583ec85019807766b6327774b823900a26f4'
-      path: packages/bnd-eac
+      url: https://github.com/rayk/bnd-eac.git
+      ref: main
 
 dev_dependencies:
   # Phase 6 negative-case tables (CONTRACT_AUTHORING_SPEC §step 6).
   parameterized_test: ^2.0.3
   very_good_analysis: ^10.2.0
+  # Analyzer plugin shipping the lc-stack + contract-authoring lint rules.
+  # Wired via analysis_options.yaml `analyzer: plugins: [bnd_lints]`. Tracks
+  # main; the newest contract-authoring lints currently live on a feature
+  # branch (feat/net-new-contract-authoring-lints) not yet merged to main.
+  bnd_lints:
+    git:
+      url: https://github.com/rayk/bnd-lints.git
+      ref: main

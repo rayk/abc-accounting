@@ -1,15 +1,16 @@
-/// Ledger type vocabulary contract for the bnd_eac engine.
+/// Ledger type-vocabulary contract (`000`).
 ///
 /// Registers the core domain types of the abc_accounting Ledger boundary,
 /// correcting mirror erasure of extension types via `typeOverrides` and
 /// `structure`. The `Contract.signature` surface is NOT used here — type
-/// registration only. See `account_opening.dart` for the signature contract.
+/// registration only. The behaviour contracts (`001_open.dart` …
+/// `008_change_feed.dart`) `dependsOn` this one for their shared vocabulary.
 ///
 /// **Name collision note.** `package:abc_accounting` exports a domain
 /// [abc.Version] extension type (`Version(int value)`). The engine's semver
-/// triple is now named [ContractVersion] (`ContractVersion(int major, int
-/// minor, int patch)`), so there is no collision. The `abc` prefix on the
-/// abc_accounting import is kept for clarity and to scope all domain types.
+/// triple is named [ContractVersion] (`ContractVersion(int major, int minor,
+/// int patch)`), so there is no collision. The `abc` prefix is kept for
+/// clarity and to scope all domain types.
 library;
 
 import 'package:abc_accounting/abc_accounting.dart' as abc;

@@ -5,7 +5,7 @@
 /// green).  Run explicitly to observe the red:
 ///
 /// ```bash
-/// dart test test/pending_eac_conformance_test.dart \
+/// dart test test/pending_conformance_test.dart \
 ///   --run-skipped -t pending
 /// ```
 ///

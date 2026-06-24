@@ -1,13 +1,12 @@
-/// Phase-5 EAC proof: the steering surface against the real account_opening
-/// contract and Ledger outcomes.
+/// Steering surface proof, against the real deposit contract and Ledger
+/// outcomes.
 ///
-/// **Part 1 — steering render (POLICY).** A real `CaseRejected` (deposit
-/// succeeds but the case wrongly expects a rejection) renders a Steer-first
-/// panel tagged `[POLICY]`, with the observed `Right` in `Got` and the verbatim
-/// DO-NOT guardrail.
+/// **Part 1 — POLICY.** A real `CaseRejected` (deposit succeeds but the case
+/// wrongly expects a rejection) renders a Steer-first panel tagged `[POLICY]`,
+/// with the observed `Right` in `Got` and the verbatim DO-NOT guardrail.
 ///
-/// **Part 2 — steering render (MISSING_SYMBOL).** The unimplemented stub throws
-/// → `SeamThrew` → `[MISSING_SYMBOL]`.
+/// **Part 2 — MISSING_SYMBOL.** The unimplemented stub throws → `SeamThrew` →
+/// `[MISSING_SYMBOL]`.
 ///
 /// **Part 3 — orientation inventory.** The deposit signature renders the spec
 /// inventory shape (function, purpose, invariants, failures, hyphen tags).
@@ -16,16 +15,14 @@
 /// every tag is hyphen-only; the JSON is byte-identical across two builds with
 /// the same seeds.
 ///
-/// **Part 5 — --tags selection.** Hyphen-tagged tests are selected by
-/// `dart test --tags` (the runner accepts hyphenated identifiers; the engine
-/// never emits a `:` or `.` in a tag). The selection is exercised from the
-/// command line (see the build log's `--tags` run).
+/// **Part 5 — --tags selection.** Hyphen-tagged witnesses for `dart test
+/// --tags`.
 @TestOn('vm')
-@Tags(['contract-account_opening'])
+@Tags(['contract-deposit'])
 library;
 
 import 'package:abc_accounting/abc_accounting.dart';
-import 'package:abc_accounting_contract/src/account_opening.dart';
+import 'package:abc_accounting_contract/src/contracts/002_deposit.dart';
 import 'package:abc_accounting_contract/src/reference_abc_accounting.dart';
 import 'package:bnd_eac/execution.dart';
 import 'package:bnd_eac/steering.dart';
@@ -43,9 +40,11 @@ const _wrongReject = FailureMode<AmountMustBePositive>(
 void main() {
   // ── Part 1 — steering render (POLICY) ────────────────────────────────────
 
-  group('Phase 5 — steering render for a real CaseRejected (POLICY)', () {
+  group('steering render for a real CaseRejected (POLICY)', () {
     test('renders Steer-first with [POLICY] and the verbatim DO-NOT', () async {
-      final ledger = await ReferenceLedger.open(const AccountId('p5-policy'));
+      final ledger = await ReferenceLedger.open(
+        const AccountId('steer-policy'),
+      );
       // deposit(100) settles Right, but this case wrongly expects a rejection.
       final outcome = await evaluateCase(
         Case<_R>(
@@ -62,7 +61,7 @@ void main() {
 
       final block = steeringForCase(
         stableId: stableId(
-          contract: 'account_opening',
+          contract: 'deposit',
           signature: 'deposit',
           unit: 'case',
           id: 'wrong-reject',
@@ -75,9 +74,7 @@ void main() {
       );
       final text = renderSteering(block);
 
-      check(
-        text,
-      ).contains('account_opening/deposit/case:wrong-reject  [POLICY]');
+      check(text).contains('deposit/deposit/case:wrong-reject  [POLICY]');
       // Steer-first ordering.
       check(text.indexOf('Steer')).isLessThan(text.indexOf('Got'));
       check(text.indexOf('Got')).isLessThan(text.indexOf('Given'));
@@ -96,7 +93,7 @@ void main() {
 
   // ── Part 2 — steering render (MISSING_SYMBOL) ────────────────────────────
 
-  group('Phase 5 — steering render for a seam-throw (MISSING_SYMBOL)', () {
+  group('steering render for a seam-throw (MISSING_SYMBOL)', () {
     test('the unimplemented stub renders [MISSING_SYMBOL]', () async {
       final outcome = await evaluateCase(
         Case<_R>(
@@ -113,7 +110,7 @@ void main() {
       final text = renderSteering(
         steeringForCase(
           stableId: stableId(
-            contract: 'account_opening',
+            contract: 'deposit',
             signature: 'deposit',
             unit: 'case',
             id: 'stub',
@@ -131,35 +128,31 @@ void main() {
 
   // ── Part 3 — orientation inventory ───────────────────────────────────────
 
-  group('Phase 5 — orientation inventory for account_opening', () {
+  group('orientation inventory for the deposit contract', () {
     test('renders the spec inventory shape for the deposit signature', () {
-      final deposit = accountOpeningContract.signatures.firstWhere(
-        (s) => s.name == 'deposit',
-      );
+      final deposit = depositContract.signatures.single;
       final inv = orientationInventory(
-        accountOpeningContract,
+        depositContract,
         deposit,
         grounding: 'AccountState.empty(id)',
       );
 
       check(inv['kind']).equals('inventory');
-      check(inv['contract']).equals('account_opening');
+      check(inv['contract']).equals('deposit');
       check(inv['grounding']).equals('AccountState.empty(id)');
       check(inv['function']).isA<String>();
-      // The declared invariant + failure mode are surfaced.
       check(inv['invariants']! as List).isNotEmpty();
       final failures = inv['failures']! as List;
       check(
         failures.map((f) => (f as Map)['type']).toList(),
       ).contains('AmountMustBePositive');
-      // Tags are hyphen-form.
-      check(inv['tags']! as List).contains('contract-account_opening');
+      check(inv['tags']! as List).contains('contract-deposit');
     });
   });
 
   // ── Part 4 — sidecar + stable IDs + tag hygiene ──────────────────────────
 
-  group('Phase 5 — sidecar keyed by stable IDs', () {
+  group('sidecar keyed by stable IDs', () {
     Map<String, Object?> rec(String id, {int seed = 7}) => sidecarRecord(
       id: id,
       kind: 'negative',
@@ -168,7 +161,7 @@ void main() {
       then: 'rejects AmountMustBePositive',
       outcome: 'CaseRejected',
       tags: [
-        contractTag('account_opening'),
+        contractTag('deposit'),
         sigTag('deposit'),
         failureTag('AmountMustBePositive'),
         Kind.negative.tag,
@@ -179,12 +172,12 @@ void main() {
 
     test('keys use contract/signature/unit:id and tags are hyphen-only', () {
       final id = stableId(
-        contract: 'account_opening',
+        contract: 'deposit',
         signature: 'deposit',
         unit: 'case',
         id: 'overdrawn',
       );
-      check(id).equals('account_opening/deposit/case:overdrawn');
+      check(id).equals('deposit/deposit/case:overdrawn');
 
       final record = rec(id);
       for (final tag in record['tags']! as List) {
@@ -195,8 +188,8 @@ void main() {
 
     test('JSON is byte-identical across two builds with the same seeds', () {
       List<Map<String, Object?>> build() => [
-        rec('account_opening/deposit/case:a'),
-        rec('account_opening/deposit/case:b'),
+        rec('deposit/deposit/case:a'),
+        rec('deposit/deposit/case:b'),
       ];
       check(sidecarJson(build())).equals(sidecarJson(build()));
     });
@@ -204,11 +197,11 @@ void main() {
 
   // ── Part 5 — --tags selection witnesses ──────────────────────────────────
 
-  group('Phase 5 — hyphen-tagged tests for --tags selection', () {
+  group('hyphen-tagged tests for --tags selection', () {
     test(
       'a negative-tagged witness',
       tags: {
-        'contract-account_opening',
+        'contract-deposit',
         'failure-AmountMustBePositive',
         'kind-negative',
       },
@@ -221,7 +214,7 @@ void main() {
 
     test(
       'a positive-tagged witness',
-      tags: {'contract-account_opening', 'kind-positive'},
+      tags: {'contract-deposit', 'kind-positive'},
       () => check(Kind.positive.tag).equals('kind-positive'),
     );
   });

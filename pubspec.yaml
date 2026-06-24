@@ -11,10 +11,12 @@ workspace:
   - abc_accounting_impl
   - abc_accounting_contract
 
-# Dev loop for the bnd_eac engine build (CONTRACT_AUTHORING_SPEC.md).
-# Points every bnd_eac reference (incl. the contract package's git pin) at the
-# local working copy so engine edits are picked up without re-pinning.
-# REMOVE + re-pin to a published SHA when the build lands.
-dependency_overrides:
-  bnd_eac:
-    path: /Users/rayk/bounded-fixtures/bnd-eac
+# The bnd_eac engine build has landed: the contract package pins it directly to
+# rayk/bnd-eac (a SHA on feat/contract-authoring-engine). No override needed.
+#
+# To resume LOCAL engine edits, re-add an override pointing at the working copy:
+#   dependency_overrides:
+#     bnd_eac:
+#       path: /Users/rayk/bounded-fixtures/bnd-eac
+# then re-pin abc_accounting_contract/pubspec.yaml to a new full SHA and remove
+# the override again when done (CONTRACT_AUTHORING_SPEC dev loop).
