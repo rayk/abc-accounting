@@ -5,7 +5,7 @@
 /// green).  Run explicitly to observe the red:
 ///
 /// ```bash
-/// dart test test/eac/pending_eac_conformance_test.dart \
+/// dart test test/pending_eac_conformance_test.dart \
 ///   --run-skipped -t pending
 /// ```
 ///
@@ -16,7 +16,7 @@
 library;
 
 import 'package:abc_accounting/abc_accounting.dart';
-import 'package:abc_accounting_contract/src/eac/ledger_conformance.dart';
+import 'package:abc_accounting_contract/src/ledger_conformance.dart';
 import 'package:test/test.dart';
 
 void main() {

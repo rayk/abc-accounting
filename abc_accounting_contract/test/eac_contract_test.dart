@@ -1,4 +1,4 @@
-/// Smoke-tests for the eac-style contracts in lib/src/eac/.
+/// Smoke-tests for the eac-style contracts in lib/src/.
 ///
 /// Verifies that:
 /// 1. [checkContractDrift] passes for the real contracts.
@@ -13,8 +13,8 @@
 library;
 
 import 'package:abc_accounting/abc_accounting.dart' as abc;
-import 'package:abc_accounting_contract/src/eac/account_opening.dart';
-import 'package:abc_accounting_contract/src/eac/ledger_types.dart';
+import 'package:abc_accounting_contract/src/account_opening.dart';
+import 'package:abc_accounting_contract/src/ledger_types.dart';
 import 'package:bnd_eac/contract.dart';
 import 'package:test/test.dart';
 

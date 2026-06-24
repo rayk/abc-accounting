@@ -7,7 +7,7 @@
 @TestOn('vm')
 library;
 
-import 'package:abc_accounting_contract/src/eac/ledger_conformance.dart';
+import 'package:abc_accounting_contract/src/ledger_conformance.dart';
 import 'package:abc_accounting_contract/src/reference_abc_accounting.dart';
 import 'package:test/test.dart';
 

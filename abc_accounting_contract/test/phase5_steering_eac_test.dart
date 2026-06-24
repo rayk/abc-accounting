@@ -25,7 +25,7 @@
 library;
 
 import 'package:abc_accounting/abc_accounting.dart';
-import 'package:abc_accounting_contract/src/eac/account_opening.dart';
+import 'package:abc_accounting_contract/src/account_opening.dart';
 import 'package:abc_accounting_contract/src/reference_abc_accounting.dart';
 import 'package:bnd_eac/execution.dart';
 import 'package:bnd_eac/steering.dart';

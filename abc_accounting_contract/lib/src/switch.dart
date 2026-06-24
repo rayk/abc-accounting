@@ -1,6 +1,6 @@
 import 'package:abc_accounting/abc_accounting.dart';
 
-import 'eac/ledger_conformance.dart';
+import 'ledger_conformance.dart';
 import 'reference_abc_accounting.dart';
 
 /// The **switch in the contract package**: a settable factory that selects

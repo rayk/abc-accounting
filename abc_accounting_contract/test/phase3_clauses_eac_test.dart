@@ -23,7 +23,7 @@ library;
 import 'dart:async';
 
 import 'package:abc_accounting/abc_accounting.dart';
-import 'package:abc_accounting_contract/src/eac/phase3_clauses.dart';
+import 'package:abc_accounting_contract/src/phase3_clauses.dart';
 import 'package:abc_accounting_contract/src/reference_abc_accounting.dart';
 import 'package:bnd_eac/contract.dart';
 import 'package:bnd_eac/execution.dart';

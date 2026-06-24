@@ -73,7 +73,7 @@ final _versionIncrementedPostcondition = Postcondition(
 /// Depends on [ledgerTypeContract] for the shared vocabulary.
 ///
 /// Paired with the test at
-/// `test/eac/phase3_clauses_eac_test.dart`.
+/// `test/phase3_clauses_eac_test.dart`.
 final phase3DepositContract =
     Contract(
       name: 'phase3_deposit_clauses',
